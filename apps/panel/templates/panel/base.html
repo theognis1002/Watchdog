@@ -1,0 +1,23 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Watchdog Alerts</title>
+    {% block styles %}
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.1/css/bulma.min.css">
+        <link rel="stylesheet" href="{% static 'styles.css' %}">
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.0/js/all.min.js" crossorigin="anonymous"></script>
+    {% endblock %}
+</head>
+<body>
+    <div class="container mt-4">
+        <div class="is-inline-flex">
+            <h1 class="title has-text-link mr-2">Watchdog Alerts</h1><i class="fas fa-exclamation-circle fa-2x has-text-link mt-1"></i>
+        </div>
+        {% block content %}
+        {% endblock %}
+    </div>
+</body>
+</html>

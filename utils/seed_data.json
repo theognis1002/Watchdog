@@ -1,0 +1,28 @@
+[
+	{
+		"model": "panel.targetsite",
+		"pk": 1,
+		"fields": {
+			"site_name": "Walmart",
+			"base_url": "http://www.walmart.com"
+		}
+	},
+	{
+		"model": "panel.targetsite",
+		"pk": 2,
+		"fields": { "site_name": "Amazon", "base_url": "http://www.amazon.com" }
+	},
+	{
+		"model": "panel.targetsite",
+		"pk": 3,
+		"fields": {
+			"site_name": "Best Buy",
+			"base_url": "http://www.bestbuy.com"
+		}
+	},
+	{
+		"model": "panel.targetsite",
+		"pk": 4,
+		"fields": { "site_name": "Target", "base_url": "http://www.target.com" }
+	}
+]

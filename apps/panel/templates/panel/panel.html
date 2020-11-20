@@ -1,0 +1,68 @@
+{% extends 'panel/base.html' %}
+{% load bulma_tags %}
+
+{% block content %}
+
+<div class="columns">
+    <div class="column">
+
+        {% if messages %}
+            {% for message in messages %}
+                <div class="notification is-primary mt-3" role="alert">
+                      <button class="delete" onclick="this.parentElement.style.display='none'"></button>
+                {{ message|safe }}
+                </div>
+            {% endfor %}
+        {% endif %}
+
+        <form method="post">
+            <div class="field is-grouped">
+                {% csrf_token %}
+                {{ form|bulma }}
+                <p class="control">
+                    <button class="button is-link" type="submit">Add</button>
+                </p>
+            </div>
+        </form>
+    </div>
+    <div class="column">
+    </div>
+</div>
+
+<div class="table-container">
+    <table class="table is-bordered is-striped is-narrow is-hoverable is-fullwidth">
+        <thead>
+            <th>Image</th>
+            <th>Product name</th>
+            <th>Price</th>
+            <th>SKU</th>
+            <th>Available</th>
+            <th>URL</th>
+            <th></th>
+        </thead>
+        <tbody>
+            {% for product in products %}
+                <tr>
+                    <td><img src="{{ product.image }}" alt=""></td>
+                    <td>{{product.name }}</td>
+                    <td>{{product.price }}</td>
+                    <td>{{product.sku }}</td>
+                    <td>{{product.is_available }}</td>
+                    <td><a href="{{product.url }}">{{product.url }}</a></td>
+                    <td><a href="{% url 'product-delete' product.id %}"><button class="button is-danger">Delete</button></a></td>
+                </tr>
+            {% empty %}
+                <tr>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

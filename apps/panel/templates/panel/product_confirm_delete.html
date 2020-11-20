@@ -1,0 +1,16 @@
+{% extends 'panel/base.html' %}
+{% block title %}{{object_name}} Confirm delete?{% endblock %}
+
+{% block content %}
+    <div id="content-container" class="container p-none">
+        <div class="side-p">
+            <h4 class="title">Are you sure?</h4>
+            <p class="mb-3">You're about to delete {{ object }}. Please confirm.</p>
+            <form action="" method="post">
+                {% csrf_token %}
+                <input class="button is-danger" type="submit" value="Confirm"/>
+                <a href="{% url 'panel' %}"><input class="button is-secondary" type="button" onclick value="Cancel"></a>
+            </form>
+        </div>
+    </div>
+{% endblock %}
