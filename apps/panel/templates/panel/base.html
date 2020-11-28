@@ -9,6 +9,9 @@
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.1/css/bulma.min.css">
         <link rel="stylesheet" href="{% static 'styles.css' %}">
         <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.0/js/all.min.js" crossorigin="anonymous"></script>
+        <link rel="preconnect" href="https://fonts.gstatic.com">
+        <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,500;1,400&display=swap" rel="stylesheet">
+        <link rel="icon" type="image/png" href="{% static 'favicon-32x32.png' %}"/>
     {% endblock %}
 </head>
 <body>
@@ -16,6 +19,7 @@
         <div class="is-inline-flex">
             <h1 class="title has-text-link mr-2">Watchdog Alerts</h1><i class="fas fa-exclamation-circle fa-2x has-text-link mt-1"></i>
         </div>
+        {% include 'panel/partials/navbar.html' %}
         {% block content %}
         {% endblock %}
     </div>

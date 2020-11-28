@@ -25,7 +25,18 @@ headers = [
 ]
 
 
-class Watchdog:
+class Browser:
+    chromedriver = "utils/chromedriver"
+
+    def browser(self):
+        options = Options()
+        options.headless = True
+        options.add_argument(f'user-agent={self.get_headers()["user-agent"]}')
+        driver = webdriver.Chrome(self.chromedriver, options=options)
+        return driver
+
+
+class Watchdog(Browser):
     chromedriver = "utils/chromedriver"
 
     @staticmethod
@@ -33,7 +44,6 @@ class Watchdog:
         return random.choice(headers)
 
     def add_product(self, url):
-        print(url)
         if "walmart.com" in url:
             product_info = self.walmart_product(url)
             product = Product(**product_info)
@@ -50,15 +60,11 @@ class Watchdog:
             product.save()
 
         elif "bestbuy.com" in url:
-            pass
+            product_info = self.bestbuy_product(url)
+            product = Product(**product_info)
+            product.save()
         else:
             raise ValueError("Product url does not match with existing target sites.")
-
-    def browser(self):
-        options = Options()
-        options.headless = True
-        driver = webdriver.Chrome(self.chromedriver, options=options)
-        return driver
 
     def amazon_product(self, url):
         driver = self.browser()
@@ -134,7 +140,6 @@ class Watchdog:
             "is_available": availability,
             "url": url,
         }
-        print(product_info)
         return product_info
 
     def target_product(self, url):
@@ -153,7 +158,6 @@ class Watchdog:
             .find("img")
             .get("src")
         )
-        print(image)
         availability_phrases = ["Pick it up", "Deliver it", "Ship it"]
         availability = [
             True
@@ -169,4 +173,24 @@ class Watchdog:
             "url": url,
         }
         driver.quit()
+        return product_info
+
+    def bestbuy_product(self, url):
+        driver = self.browser()
+        driver.get(url)
+        soup = BeautifulSoup(driver.page_source, "lxml")
+        body = soup.body
+        product_name = body.find("div", {"class": "shop-product-title"}).text.strip()
+        price_body = body.find("div", {"class": "pricing-price"})
+        price = float(price_body.find("span").text.strip().replace("$", ""))
+        image = body.find("img", {"class": "primary-image"})["src"].split(";")[0]
+        availability = body.find("button", {"class": "add-to-cart-button"})
+        availability = True if availability else False
+        product_info = {
+            "name": product_name,
+            "price": price,
+            "image": image,
+            "is_available": availability,
+            "url": url,
+        }
         return product_info

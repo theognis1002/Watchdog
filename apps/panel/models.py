@@ -1,4 +1,19 @@
 from django.db import models
+from django.contrib.sites.models import Site
+
+
+class WatchdogSettings(models.Model):
+    site = models.OneToOneField(Site, on_delete=models.CASCADE)
+    slack_api_key = models.CharField(max_length=255, blank=True)
+    slack_webhook_uri = models.URLField(blank=True)
+    slack_channel_id = models.CharField(max_length=55, blank=True)
+
+    def __str__(self):
+        return f"{self.site} settings"
+
+    class Meta:
+        verbose_name = "Watchdog Settings"
+        verbose_name_plural = "Watchdog Settings"
 
 
 class TargetSite(models.Model):

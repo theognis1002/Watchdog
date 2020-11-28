@@ -1,3 +1,7 @@
+* {
+	font-family: "Roboto", sans-serif;
+	font-style: normal;
+}
 .label:not(:last-child) {
 	margin-bottom: 0em;
 }
@@ -11,6 +15,10 @@
 	padding: 0.75rem;
 }
 
+table {
+	margin-bottom: 5rem;
+}
+
 td img {
 	max-height: 150px;
 }
@@ -18,4 +26,5 @@ td img {
 td {
 	font-size: 14px;
 	height: 2rem;
+	text-align: center !important;
 }
