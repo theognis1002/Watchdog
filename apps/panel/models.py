@@ -7,6 +7,16 @@ class WatchdogSettings(models.Model):
     slack_api_key = models.CharField(max_length=255, blank=True)
     slack_webhook_uri = models.URLField(blank=True)
     slack_channel_id = models.CharField(max_length=55, blank=True)
+    slack_private_channel_ids = models.CharField(max_length=255, blank=True)
+
+    @property
+    def private_channels(self):
+        if len(self.slack_private_channel_ids):
+            return [
+                channel.strip() for channel in self.slack_private_channel_ids.split(",")
+            ]
+        else:
+            return []
 
     def __str__(self):
         return f"{self.site} settings"

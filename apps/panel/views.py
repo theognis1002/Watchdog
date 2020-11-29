@@ -55,5 +55,9 @@ class SettingsView(UpdateView):
         return context
 
     def form_valid(self, form):
-        messages.success(self.request, "Successfully updated credential settings!")
+        messages.success(
+            self.request,
+            "Successfully updated credential settings!",
+            extra_tags="is-success",
+        )
         return super().form_valid(form)

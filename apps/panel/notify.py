@@ -1,22 +1,53 @@
 from .models import WatchdogSettings
 import requests
 import json
+from .models import Product
 
 
 class Notification:
     def __init__(self):
-        settings = WatchdogSettings()
+        settings = WatchdogSettings.objects.get(site__pk=1)
         self.private_webhook = settings.slack_webhook_uri
-        self.SLACK_MAIN_TOKEN = settings.slack_api_key
-        self.private_channel = settings.slack_channel_id
+        self.api_token = settings.slack_api_key
+        self.public_channel = settings.slack_channel_id
+        self.private_channels = settings.slack_private_channel_ids
 
-    def message(self, message):
+    def private_message(self, product):
+        assert isinstance(product, Product)
+
+        for channel in self.private_channels:
+            slack_msg = {
+                "channel": channel,
+                "blocks": [
+                    {"type": "divider"},
+                    {
+                        "type": "section",
+                        "text": {"type": "mrkdwn", "text": f"{product}"},
+                    },
+                ],
+            }
+
+            requests.post(self.private_webhook, data=json.dumps(slack_msg))
+
+    def channel_message(self, product):
+        assert isinstance(product, Product)
 
         slack_msg = {
-            "channel": self.private_channel,
+            "channel": self.public_channel,
             "blocks": [
                 {"type": "divider"},
-                {"type": "section", "text": {"type": "mrkdwn", "text": f"{message}"}},
+                {
+                    "type": "section",
+                    "text": {
+                        "type": "mrkdwn",
+                        "text": f"Availability status has changed for the following product: \n\n"
+                        f"*Product:* { product.name }\n"
+                        f"*Price:* { product.price }\n"
+                        f"*Availability:* { product.availability }\n"
+                        f"*SKU:* { product.sku }\n"
+                        f"*URL:* { product.url }\n",
+                    },
+                },
             ],
         }
 
