@@ -28,7 +28,11 @@ class PanelView(FormView):
             watchdog = Watchdog()
             watchdog.add_product(url)
 
-            messages.success(self.request, "Product added successfully!")
+            messages.success(
+                self.request, "Product added successfully!", extra_tags="is-success"
+            )
+        except ValueError as e:
+            messages.error(self.request, str(e), extra_tags="is-danger")
         except Exception as e:
             logging.error(f"{e.__class__.__name__} - {str(e)}")
 

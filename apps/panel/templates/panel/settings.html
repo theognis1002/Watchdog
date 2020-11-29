@@ -5,16 +5,6 @@
 
 <div class="columns">
     <div class="column">
-
-        {% if messages %}
-            {% for message in messages %}
-                <div class="notification is-primary mt-3" role="alert">
-                      <button class="delete" onclick="this.parentElement.style.display='none'"></button>
-                {{ message|safe }}
-                </div>
-            {% endfor %}
-        {% endif %}
-
         <form method="post">
             {% csrf_token %}
             {{ form|bulma }}

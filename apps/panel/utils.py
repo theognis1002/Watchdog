@@ -153,6 +153,7 @@ class Watchdog(Browser):
             .text.strip()
             .replace("$", "")
         )
+        sku = None
         image = (
             body.find_all("div", {"class": "slideDeckPicture"})[-1]
             .find("img")
@@ -168,6 +169,7 @@ class Watchdog(Browser):
         product_info = {
             "name": product_name,
             "price": price,
+            "sku": sku,
             "image": image,
             "is_available": availability,
             "url": url,
@@ -183,12 +185,14 @@ class Watchdog(Browser):
         product_name = body.find("div", {"class": "shop-product-title"}).text.strip()
         price_body = body.find("div", {"class": "pricing-price"})
         price = float(price_body.find("span").text.strip().replace("$", ""))
+        sku = int(body.find("div", {"class": "sku"}).text.strip().split(":")[-1])
         image = body.find("img", {"class": "primary-image"})["src"].split(";")[0]
         availability = body.find("button", {"class": "add-to-cart-button"})
         availability = True if availability else False
         product_info = {
             "name": product_name,
             "price": price,
+            "sku": sku,
             "image": image,
             "is_available": availability,
             "url": url,

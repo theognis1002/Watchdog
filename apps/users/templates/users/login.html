@@ -1,0 +1,14 @@
+{% extends 'panel/base.html' %}
+{% load bulma_tags %}
+
+{% block content %}
+    <div class="columns">
+        <div class="column is-one-third">
+            <form method="POST">
+                {% csrf_token %}
+                {{ form|bulma }}
+                <button class="button is-link" type="submit">Login</button>
+            </form>
+        </div>
+    </div>
+{% endblock %}

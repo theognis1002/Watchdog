@@ -17,9 +17,25 @@
 <body>
     <div class="container mt-4">
         <div class="is-inline-flex">
-            <h1 class="title has-text-link mr-2">Watchdog Alerts</h1><i class="fas fa-exclamation-circle fa-2x has-text-link mt-1"></i>
+            <a href="{% url 'panel' %}">
+                <h1 class="title has-text-link mr-2 mb-4">Watchdog Alerts</h1>
+            </a>
+            <i class="fas fa-exclamation-circle fa-2x has-text-link mt-1"></i>
         </div>
-        {% include 'panel/partials/navbar.html' %}
+
+        {% if user.is_authenticated %}
+            {% include 'panel/partials/navbar.html' %}
+        {% endif %}
+
+        {% if messages %}
+            {% for message in messages %}
+                <div class="notification {{ message.tags }} mt-3" role="alert">
+                      <button class="delete" onclick="this.parentElement.style.display='none'"></button>
+                {{ message|safe }}
+                </div>
+            {% endfor %}
+        {% endif %}
+
         {% block content %}
         {% endblock %}
     </div>
