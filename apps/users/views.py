@@ -7,6 +7,32 @@ from django.contrib.auth import authenticate, login, logout
 from django.shortcuts import redirect, reverse
 
 
+def register(request):
+    if request.method == "POST":
+        form = AccountSignupForm(request.POST)
+
+        if form.is_valid():
+            user = form.save()
+            username = form.cleaned_data.get("username")
+            login(request, user)
+            messages.success(
+                request, "Registration successful!", extra_tags="is-success"
+            )
+            return redirect("panel")
+
+        else:
+            return render(
+                request=request,
+                template_name="users/register.html",
+                context={"form": form},
+            )
+
+    form = AccountSignupForm
+    return render(
+        request=request, template_name="users/register.html", context={"form": form}
+    )
+
+
 def login_request(request):
     if request.method == "POST":
         form = AuthenticationForm(request=request, data=request.POST)
