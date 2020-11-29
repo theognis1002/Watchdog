@@ -1,5 +1,8 @@
+import concurrent.futures
+import logging
 import random
 import re
+import time
 
 import requests
 from bs4 import BeautifulSoup
@@ -7,6 +10,9 @@ from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 
 from .models import Product, TargetSite
+from .notify import Notification
+
+logging.basicConfig(format="    [-]%(process)d-%(levelname)s-%(message)s")
 
 headers = [
     {
@@ -37,7 +43,12 @@ class Browser:
 
 
 class Watchdog(Browser):
+    notify = Notification()
     chromedriver = "utils/chromedriver"
+    MAX_THREADS = 10
+
+    def __init__(self):
+        self.driver = self.browser()
 
     @staticmethod
     def get_headers():
@@ -67,9 +78,8 @@ class Watchdog(Browser):
             raise ValueError("Product url does not match with existing target sites.")
 
     def amazon_product(self, url):
-        driver = self.browser()
-        driver.get(url)
-        soup = BeautifulSoup(driver.page_source, "lxml")
+        self.driver.get(url)
+        soup = BeautifulSoup(self.driver.page_source, "lxml")
         body = soup.body
         product_name = body.find("span", {"id": "productTitle"})
         product_name = body.find("h1", {"id": "title"}).text.strip()
@@ -96,7 +106,6 @@ class Watchdog(Browser):
             "is_available": availability,
             "url": url,
         }
-        driver.quit()
         return product_info
 
     def walmart_product(self, url):
@@ -143,9 +152,8 @@ class Watchdog(Browser):
         return product_info
 
     def target_product(self, url):
-        driver = self.browser()
-        driver.get(url)
-        soup = BeautifulSoup(driver.page_source, "lxml")
+        self.driver.get(url)
+        soup = BeautifulSoup(self.driver.page_source, "lxml")
         body = soup.body
         product_name = body.find("h1", {"data-test": "product-title"}).text.strip()
         price = float(
@@ -174,13 +182,11 @@ class Watchdog(Browser):
             "is_available": availability,
             "url": url,
         }
-        driver.quit()
         return product_info
 
     def bestbuy_product(self, url):
-        driver = self.browser()
-        driver.get(url)
-        soup = BeautifulSoup(driver.page_source, "lxml")
+        self.driver.get(url)
+        soup = BeautifulSoup(self.driver.page_source, "lxml")
         body = soup.body
         product_name = body.find("div", {"class": "shop-product-title"}).text.strip()
         price_body = body.find("div", {"class": "pricing-price"})
@@ -198,3 +204,49 @@ class Watchdog(Browser):
             "url": url,
         }
         return product_info
+
+    def is_available_now(self, product):
+        if "walmart.com" in product.url:
+            product_info = self.walmart_product(product.url)
+
+        elif "amazon.com" in product.url:
+            product_info = self.amazon_product(product.url)
+
+        elif "target.com" in product.url:
+            product_info = self.target_product(product.url)
+
+        elif "bestbuy.com" in product.url:
+            product_info = self.bestbuy_product(product.url)
+
+        else:
+            raise ValueError("Product url does not match with existing target sites.")
+
+        if product_info["is_available"] and product.is_available is False:
+            self.notify.dispatch(product, product_info)
+            product.is_available = product_info["is_available"]
+            product.save()
+
+    def run(self):
+        try:
+            products = (
+                Product.objects.all()
+                .order_by("-site")
+                .exclude(site__site_name__icontains="walmart")
+            )
+            walmart_products = Product.objects.filter(
+                site__site_name__icontains="walmart"
+            )
+
+            for product in products:
+                self.is_available_now(product)
+
+            threads = min(self.MAX_THREADS, len(walmart_products))
+
+            with concurrent.futures.ThreadPoolExecutor(max_workers=threads) as executor:
+                executor.map(self.is_available_now, walmart_products)
+
+        except Exception as e:
+            logging.error(f"{e.__class__.__name__} - {str(e)}")
+
+        finally:
+            self.browser.quit()

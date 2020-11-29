@@ -12,7 +12,7 @@ class Notification:
         self.public_channel = settings.slack_channel_id
         self.private_channels = settings.slack_private_channel_ids
 
-    def private_message(self, product):
+    def _private_message(self, product, product_info):
         assert isinstance(product, Product)
 
         for channel in self.private_channels:
@@ -29,7 +29,7 @@ class Notification:
 
             requests.post(self.private_webhook, data=json.dumps(slack_msg))
 
-    def channel_message(self, product):
+    def _channel_message(self, product, product_info):
         assert isinstance(product, Product)
 
         slack_msg = {
@@ -52,3 +52,7 @@ class Notification:
         }
 
         requests.post(self.private_webhook, data=json.dumps(slack_msg))
+
+    def dispatch(self, product, product_info):
+        self._channel_message(product, product_info)
+        self._private_message(product, product_info)
