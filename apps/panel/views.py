@@ -5,8 +5,8 @@ from django.shortcuts import render
 from django.urls import reverse_lazy
 from django.views.generic import DeleteView, FormView, UpdateView
 
-from .forms import AddProductForm, WatchdogSettingsForm
-from .models import Product, WatchdogSettings
+from .forms import AddProductForm, WatchdogMetaDetailsForm
+from .models import Product, WatchdogMetaDetails
 from .utils import Watchdog
 
 logging.basicConfig(format="    [-]%(process)d-%(levelname)s-%(message)s")
@@ -46,8 +46,8 @@ class ProductDeleteView(DeleteView):
 
 class SettingsView(UpdateView):
     template_name = "panel/settings.html"
-    model = WatchdogSettings
-    form_class = WatchdogSettingsForm
+    model = WatchdogMetaDetails
+    form_class = WatchdogMetaDetailsForm
     success_url = reverse_lazy("settings", kwargs={"pk": 1})
 
     def get_context_data(self, **kwargs):

@@ -129,3 +129,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
 
 STATIC_URL = "/static/"
+
+# WATCHDOG SCRAPER SETTINGS
+SCRAPER_DELAY = 60 * 3
+MAX_THREADS = 10

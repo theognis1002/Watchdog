@@ -1,12 +1,14 @@
-from .models import WatchdogSettings
-import requests
 import json
-from .models import Product
+import threading
+
+import requests
+
+from .models import Product, WatchdogMetaDetails
 
 
 class Notification:
     def __init__(self):
-        settings = WatchdogSettings.objects.get(site__pk=1)
+        settings = WatchdogMetaDetails.objects.get(site__pk=1)
         self.private_webhook = settings.slack_webhook_uri
         self.api_token = settings.slack_api_key
         self.public_channel = settings.slack_channel_id
@@ -54,5 +56,11 @@ class Notification:
         requests.post(self.private_webhook, data=json.dumps(slack_msg))
 
     def dispatch(self, product, product_info):
-        self._channel_message(product, product_info)
-        self._private_message(product, product_info)
+        thread1 = threading.Thread(
+            target=self._channel_message, args=(product, product_info)
+        )
+        thread2 = threading.Thread(
+            target=self._private_message, args=(product, product_info)
+        )
+        thread1.start()
+        thread2.start()

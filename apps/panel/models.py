@@ -1,13 +1,17 @@
 from django.db import models
 from django.contrib.sites.models import Site
+from django.utils import timezone
 
 
-class WatchdogSettings(models.Model):
+class WatchdogMetaDetails(models.Model):
     site = models.OneToOneField(Site, on_delete=models.CASCADE)
     slack_api_key = models.CharField(max_length=255, blank=True)
     slack_webhook_uri = models.URLField(blank=True)
     slack_channel_id = models.CharField(max_length=55, blank=True)
     slack_private_channel_ids = models.CharField(max_length=255, blank=True)
+    num_of_watchdog_runs = models.IntegerField(default=0)
+    last_watchdog_run = models.DateTimeField(default=timezone.now)
+    last_watchdog_runtime = models.FloatField(default=0)
 
     @property
     def private_channels(self):
@@ -22,8 +26,8 @@ class WatchdogSettings(models.Model):
         return f"{self.site} settings"
 
     class Meta:
-        verbose_name = "Watchdog Settings"
-        verbose_name_plural = "Watchdog Settings"
+        verbose_name = "Watchdog Meta Details"
+        verbose_name_plural = "Watchdog Meta Details"
 
 
 class TargetSite(models.Model):

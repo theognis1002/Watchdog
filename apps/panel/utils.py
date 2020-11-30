@@ -6,10 +6,14 @@ import time
 
 import requests
 from bs4 import BeautifulSoup
+from django.conf import settings
+from django.db.models import F
+from django.utils import timezone
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 
-from .models import Product, TargetSite
+from .models import (Product, ProductReleaseHistory, TargetSite,
+                     WatchdogMetaDetails)
 from .notify import Notification
 
 logging.basicConfig(format="    [-]%(process)d-%(levelname)s-%(message)s")
@@ -45,7 +49,7 @@ class Browser:
 class Watchdog(Browser):
     notify = Notification()
     chromedriver = "utils/chromedriver"
-    MAX_THREADS = 10
+    MAX_THREADS = settings.MAX_THREADS
 
     def __init__(self):
         self.driver = self.browser()
@@ -205,7 +209,7 @@ class Watchdog(Browser):
         }
         return product_info
 
-    def is_available_now(self, product):
+    def check_availability(self, product):
         if "walmart.com" in product.url:
             product_info = self.walmart_product(product.url)
 
@@ -226,8 +230,16 @@ class Watchdog(Browser):
             product.is_available = product_info["is_available"]
             product.save()
 
+            release_record = ProductReleaseHistory(product=product)
+            release_record.save()
+
+        print(f"Available: {product_info['is_available']} | Product: {product.name}")
+
     def run(self):
         try:
+            start_time = time.time()
+            start_timestamp = timezone.now()
+
             products = (
                 Product.objects.all()
                 .order_by("-site")
@@ -237,16 +249,25 @@ class Watchdog(Browser):
                 site__site_name__icontains="walmart"
             )
 
-            for product in products:
-                self.is_available_now(product)
-
             threads = min(self.MAX_THREADS, len(walmart_products))
 
             with concurrent.futures.ThreadPoolExecutor(max_workers=threads) as executor:
-                executor.map(self.is_available_now, walmart_products)
+                executor.map(self.check_availability, walmart_products)
+
+            for product in products:
+                try:
+                    self.check_availability(product)
+                except Exception as e:
+                    logging.error(f"Product Loop - {e.__class__.__name__} - {str(e)}")
 
         except Exception as e:
-            logging.error(f"{e.__class__.__name__} - {str(e)}")
+            logging.error(f"Main Loop - {e.__class__.__name__} - {str(e)}")
 
         finally:
-            self.browser.quit()
+            end_time = time.time()
+            meta_details = WatchdogMetaDetails.objects.get(site__pk=1)
+            meta_details.last_watchdog_run = start_timestamp
+            meta_details.last_watchdog_runtime = end_time - start_time
+            meta_details.num_of_watchdog_runs = F("num_of_watchdog_runs") + 1
+            meta_details.save()
+            self.driver.quit()
