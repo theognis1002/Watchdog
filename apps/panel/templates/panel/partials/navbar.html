@@ -1,22 +1,10 @@
-<nav class="navbar mb-5" role="navigation" aria-label="main navigation">
-    <div class="navbar-brand">
-
-    </div>
-
-    <div class="navbar-menu">
-        <div class="navbar-start">
-            <a class="navbar-item" href="{% url 'panel' %}">
-            Panel
-            </a>
-
-            <a class="navbar-item" href="{% url 'settings' pk=1 %}">
-            Settings
-            </a>
-
-            <a class="navbar-item" href="{% url 'logout' %}">
-            Logout
-            </a>
-        </div>
-
-    </div>
-</nav>
+<aside class="is-medium menu">
+    <p class="menu-label">
+        categories
+    </p>
+    <ul class="menu-list">
+        <li class="is-right"><a href="{% url 'panel' %}" class="hero is-purple"><i class="fas fa-ellipsis-v"></i> Panel</a></li>
+        <li><a href="{% url 'settings' pk=1 %}" class="hero is-purple"><i class="fas fa-cog"></i> Settings</a></li>
+        <li><a href="{% url 'logout' %}" class="hero is-purple"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+    </ul>
+</aside>

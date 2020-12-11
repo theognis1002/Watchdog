@@ -1,13 +1,17 @@
-{% extends 'panel/base.html' %}
+{% extends 'users/landing.html' %}
 {% load bulma_tags %}
+
+{% block header %}
+Register
+{% endblock %}
 
 {% block content %}
     <div class="columns">
-        <div class="column is-one-third">
+        <div class="column">
             <form method="POST">
                 {% csrf_token %}
                 {{ form|bulma }}
-                <button class="button is-link" type="submit">Register</button>
+                <button class="button is-purple" type="submit">Register</button>
             </form>
         </div>
     </div>

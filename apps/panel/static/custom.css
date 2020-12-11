@@ -1,0 +1,46 @@
+* {
+	font-family: "Roboto", sans-serif;
+	font-style: normal;
+}
+
+.is-purple {
+	background-color: #524ad0;
+	color: #fff !important;
+}
+
+.is-purple:hover {
+	background-color: rgb(106, 62, 175) !important;
+	color: #fff !important;
+}
+
+.landing {
+	margin: auto;
+	min-width: 300px !important;
+}
+
+.label:not(:last-child) {
+	margin-bottom: 0em;
+}
+
+.field {
+	width: 100%;
+	margin-right: 0.25rem;
+}
+
+.notification {
+	padding: 0.75rem;
+}
+
+table {
+	margin-bottom: 5rem;
+}
+
+td img {
+	max-height: 150px;
+}
+
+td {
+	font-size: 14px;
+	height: 2rem;
+	text-align: center !important;
+}

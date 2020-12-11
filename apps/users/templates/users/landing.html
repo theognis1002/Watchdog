@@ -33,12 +33,7 @@
 		<section class="section">
 			<div class="container">
 				<div class="columns">
-					<div class="column is-3">
-					{% if user.is_authenticated %}
-						{% include 'panel/partials/navbar.html' %}
-					{% endif %}
-					</div>
-					<div class="column is-9">
+					<div class="column is-3 landing">
 					{% if messages %}
 						{% for message in messages %}
 							<div class="notification {{ message.tags }} mt-3" role="alert">
