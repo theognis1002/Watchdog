@@ -1,6 +1,8 @@
 # Custom
 scripts.py
 scratch.py
+static/
+media/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
