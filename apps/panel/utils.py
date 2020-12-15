@@ -41,6 +41,8 @@ class Browser:
         options = Options()
         options.headless = True
         options.add_argument(f'user-agent={self.get_headers()["user-agent"]}')
+        options.add_argument("--no-sandbox")
+        options.add_argument("--disable-dev-shm-usage")
         driver = webdriver.Chrome(self.chromedriver, options=options)
         return driver
 

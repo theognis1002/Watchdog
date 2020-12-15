@@ -31,9 +31,8 @@ class PanelView(FormView):
             messages.success(
                 self.request, "Product added successfully!", extra_tags="is-success"
             )
-        except ValueError as e:
-            messages.error(self.request, str(e), extra_tags="is-danger")
         except Exception as e:
+            messages.error(self.request, str(e), extra_tags="is-danger")
             logging.error(f"{e.__class__.__name__} - {str(e)}")
 
         return super().form_valid(form)
