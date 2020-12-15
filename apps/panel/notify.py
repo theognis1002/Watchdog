@@ -8,11 +8,12 @@ from .models import Product, WatchdogMetaDetails
 
 class Notification:
     def __init__(self):
-        settings = WatchdogMetaDetails.objects.get(site__pk=1)
-        self.private_webhook = settings.slack_webhook_uri
-        self.api_token = settings.slack_api_key
-        self.public_channel = settings.slack_channel_id
-        self.private_channels = settings.slack_private_channel_ids
+        settings = WatchdogMetaDetails.objects.filter(site__pk=1).first()
+        if settings:
+            self.private_webhook = settings.slack_webhook_uri
+            self.api_token = settings.slack_api_key
+            self.public_channel = settings.slack_channel_id
+            self.private_channels = settings.slack_private_channel_ids
 
     def _private_message(self, product, product_info):
         assert isinstance(product, Product)

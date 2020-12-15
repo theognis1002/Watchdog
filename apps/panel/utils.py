@@ -12,8 +12,7 @@ from django.utils import timezone
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 
-from .models import (Product, ProductReleaseHistory, TargetSite,
-                     WatchdogMetaDetails)
+from .models import Product, ProductReleaseHistory, TargetSite, WatchdogMetaDetails
 from .notify import Notification
 
 logging.basicConfig(format="    [-]%(process)d-%(levelname)s-%(message)s")
@@ -36,7 +35,7 @@ headers = [
 
 
 class Browser:
-    chromedriver = "utils/chromedriver"
+    chromedriver = "/usr/bin/chromedriver"
 
     def browser(self):
         options = Options()
@@ -48,7 +47,6 @@ class Browser:
 
 class Watchdog(Browser):
     notify = Notification()
-    chromedriver = "utils/chromedriver"
     MAX_THREADS = settings.MAX_THREADS
 
     def __init__(self):
