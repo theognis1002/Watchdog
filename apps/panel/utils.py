@@ -2,6 +2,7 @@ import concurrent.futures
 import logging
 import random
 import re
+import sys
 import time
 
 import requests
@@ -35,7 +36,11 @@ headers = [
 
 
 class Browser:
-    chromedriver = "/usr/bin/chromedriver"
+    def __init__(self):
+        if sys.platform == "darwin":
+            self.chromedriver = "/usr/local/bin/chromedriver"
+        else:
+            self.chromedriver = "/usr/bin/chromedriver"
 
     def browser(self):
         options = Options()
