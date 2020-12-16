@@ -35,6 +35,10 @@ headers = [
 ]
 
 
+def get_headers():
+    return random.choice(headers)
+
+
 class Browser:
     def __init__(self):
         if sys.platform == "darwin":
@@ -42,26 +46,23 @@ class Browser:
         else:
             self.chromedriver = "/usr/bin/chromedriver"
 
-    def browser(self):
+    def start(self):
         options = Options()
         options.headless = True
-        options.add_argument(f'user-agent={self.get_headers()["user-agent"]}')
+        options.add_argument(f'user-agent={get_headers()["user-agent"]}')
         options.add_argument("--no-sandbox")
         options.add_argument("--disable-dev-shm-usage")
         driver = webdriver.Chrome(self.chromedriver, options=options)
         return driver
 
 
-class Watchdog(Browser):
+class Watchdog:
     notify = Notification()
     MAX_THREADS = settings.MAX_THREADS
+    browser = Browser()
 
     def __init__(self):
-        self.driver = self.browser()
-
-    @staticmethod
-    def get_headers():
-        return random.choice(headers)
+        self.driver = self.browser.start()
 
     def add_product(self, url):
         if "walmart.com" in url:
@@ -118,7 +119,7 @@ class Watchdog(Browser):
         return product_info
 
     def walmart_product(self, url):
-        headers = self.get_headers()
+        headers = get_headers()
         response = requests.get(url, headers=headers)
         soup = BeautifulSoup(response.text, "lxml")
         body = soup.body
